@@ -60,7 +60,7 @@ module.exports = configure(function (/* ctx */) {
 
       // rebuildCache: true, // rebuilds Vite/linter/etc cache on startup
 
-      publicPath: process.env.NODE_ENV == "development" ? '' : 'https://andretrindade.github.io/changeLogOpenApiUI/',
+      publicPath: process.env.NODE_ENV == "development" ? '' : 'https://sensedia.github.io/gerador-changelog-ui/',
       // analyze: true,
       // env: {},
       // rawDefine: {}
