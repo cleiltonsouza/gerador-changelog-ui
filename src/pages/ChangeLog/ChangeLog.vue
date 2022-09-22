@@ -1,50 +1,81 @@
 <template>
-  <div class="q-pa-xs">
-    <!-- changeLog Post-->
+  <div>
+    <div class="q-pa-md q-gutter-sm">
+      <q-form @submit="gerar(changeLogPostModel)" class="col-12">
+        <q-card class="my-card">
+          <q-card-section class="row">
+            <div class="text-h6">Gerador de change log - OpenAPI</div>
 
-    <div class="q-pa-md col-12">
-      <q-form @submit="gerar(changeLogPostModel)" class="row">
-        <q-input
-          class="col-12"
-          v-model="changeLogPostModel.urlOld"
-          label="Url versão anterior"
-          :rules="[(val) => !!val || 'Campo obrigatório']"
-        />
-        <q-input
-          class="col-12"
-          v-model="changeLogPostModel.urlCurrent"
-          label="Url versão atual"
-          :rules="[(val) => !!val || 'Campo obrigatório']"
-        />
+            <q-icon name="help_outline" class="cursor-pointer" size="25px">
+              <q-popup-proxy
+                transition-show="flip-up"
+                transition-hide="flip-down"
+              >
+                <q-banner class="bg-primary text-white">
+                  <template v-slot:avatar>
+                    <q-icon name="help_outline" />
+                  </template>
+                  Sistema gerador de change log através de dois arquivos do tipo
+                  *.yaml (openApi)
+                  <br/>
 
-        <q-input
-          class="col-3 col-md-3 col-sm-6 col-xs-12"
-          v-model="changeLogPostModel.templateDescription.templateAdded"
-          label="Template - Adicionado"
-        />
-        <q-input
-          class="col-3 col-md-3 col-sm-6 col-xs-12"
-          v-model="changeLogPostModel.templateDescription.templateEdited"
-          label="Template - Alterado"
-        />
-        <q-input
-          class="col-3 col-md-3 col-sm-6 col-xs-12"
-          v-model="changeLogPostModel.templateDescription.templateRemoved"
-          label="Template - Removido"
-        />
-        <q-input
-          class="col-3 col-md-3 col-sm-6 col-xs-12"
-          v-model="changeLogPostModel.templateDescription.templateRequired"
-          label="Template - Mandatoriedade"
-        />
-        <div class="col-12 items-center">
-          <q-btn
-            class="q-mt-sm col-md-auto"
-            label="Gerar change log"
-            type="submit"
-            color="primary"
-          />
-        </div>
+                  Obrigatório - Informar versão anterior e atual dos arquivos
+                  nos campos correspondentes
+                  <br/>
+
+                  Opcional - Informar template para compor escrita padrão de
+                  texto para o change log gerado
+                </q-banner>
+              </q-popup-proxy>
+            </q-icon>
+
+            <q-input
+              class="col-12"
+              outlined
+              v-model="changeLogPostModel.urlOld"
+              label="Url versão anterior"
+              :rules="[(val) => !!val || 'Campo obrigatório']"
+            />
+            <q-input
+              class="col-12"
+              outlined
+              v-model="changeLogPostModel.urlCurrent"
+              label="Url versão atual"
+              :rules="[(val) => !!val || 'Campo obrigatório']"
+            />
+
+            <q-input
+              outlined
+              class="col-3 col-md-3 col-sm-6 col-xs-12"
+              v-model="changeLogPostModel.templateDescription.templateAdded"
+              label="Template - Adicionado"
+            />
+            <q-input
+              outlined
+              class="col-3 col-md-3 col-sm-6 col-xs-12"
+              v-model="changeLogPostModel.templateDescription.templateEdited"
+              label="Template - Alterado"
+            />
+            <q-input
+              outlined
+              class="col-3 col-md-3 col-sm-6 col-xs-12"
+              v-model="changeLogPostModel.templateDescription.templateRemoved"
+              label="Template - Removido"
+            />
+            <q-input
+              outlined
+              class="col-3 col-md-3 col-sm-6 col-xs-12"
+              v-model="changeLogPostModel.templateDescription.templateRequired"
+              label="Template - Mandatoriedade"
+            />
+          </q-card-section>
+
+          <q-separator />
+
+          <q-card-actions>
+            <q-btn label="Gerar change log" type="submit" color="primary" />
+          </q-card-actions>
+        </q-card>
       </q-form>
     </div>
 
@@ -53,7 +84,7 @@
       <q-btn
         color="dark"
         icon-right="archive"
-        label="Export to csv"
+        label="Download CSV"
         no-caps
         @click="exportTable"
       />
@@ -64,6 +95,7 @@
           switch-toggle-side
           class="shadow-1 overflow-hidden"
           v-for="item in endpointChangeLogList"
+          v-bind:key="item.endpoint"
           :label="item.endpoint"
         >
           <q-card>
@@ -74,6 +106,8 @@
                   :columns="columns"
                   row-key="name"
                   :visible-columns="visibleColumns"
+                  :pagination="pagination"
+
                 >
                   <template v-slot:top="props">
                     <q-space />
@@ -184,6 +218,10 @@ const columns = [
   },
 ];
 
+const pagination =  {
+        rowsPerPage: 30 // current rows per page being displayed
+  }
+
 function groupByEndPoint(list: ChangeLogListModel[]) {
   const map = new Map();
   list.forEach((item) => {
@@ -286,9 +324,15 @@ export default defineComponent({
         `endpoint;path;field;description;oldValue;currentValue`
       );
       this.changes.forEach((change) => {
-        
-        contentArray.push(`${ this.wrapCsvValue(change.endpoint)};${this.wrapCsvValue(change.path)};${this.wrapCsvValue(change.field)};${this.wrapCsvValue(change.description)};${this.wrapCsvValue(change.oldValue)};${this.wrapCsvValue(change.currentValue)}`)
-
+        contentArray.push(
+          `${this.wrapCsvValue(change.endpoint)};${this.wrapCsvValue(
+            change.path
+          )};${this.wrapCsvValue(change.field)};${this.wrapCsvValue(
+            change.description
+          )};${this.wrapCsvValue(change.oldValue)};${this.wrapCsvValue(
+            change.currentValue
+          )}`
+        );
       });
       content = contentArray.join("\n");
       const status = exportFile("table-export.csv", content, "text/csv");
