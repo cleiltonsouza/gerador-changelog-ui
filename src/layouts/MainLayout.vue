@@ -3,7 +3,7 @@
     <q-header elevated>
       <q-toolbar>
         <q-toolbar-title>
-          ChangeLog - OpenAPI
+         Sensedia - ChangeLog - OpenAPI
         </q-toolbar-title>
 
         <div> v 1.0</div>
