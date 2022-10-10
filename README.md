@@ -1,7 +1,3 @@
-# Quasar App (change-log-api-ui)
-
-A Quasar Project
-
 ## Install the dependencies
 ```bash
 yarn
