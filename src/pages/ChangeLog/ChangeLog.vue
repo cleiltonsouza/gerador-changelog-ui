@@ -284,7 +284,7 @@ export default defineComponent({
       this.validations(changeLog);
       axios
         .post(
-          "https://change-log-yml.herokuapp.com/change-log/generate-change-log",
+          "http://localhost:5000/change-log/generate-change-log",
           changeLog
         )
         .then((response: any) => {
